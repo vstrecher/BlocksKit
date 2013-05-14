@@ -15,6 +15,26 @@
 	}];
 }
 
+- (void)eachReversed:(BKSenderBlock)block {
+    NSParameterAssert(block != nil);
+
+    if (!self.count) {
+        return;
+    }
+
+    for (NSInteger i = self.count - 1; i >= 0; i--) {
+        block([self objectAtIndex:i]);
+    }
+}
+
+- (void)eachReversed:(BOOL)isReversed block:(BKSenderBlock)block {
+    if (isReversed) {
+        [self eachReversed:block];
+    } else {
+        [self each:block];
+    }
+}
+
 - (void)apply:(BKSenderBlock)block {
 	NSParameterAssert(block != nil);
 	

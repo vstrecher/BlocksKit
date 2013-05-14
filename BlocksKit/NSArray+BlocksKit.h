@@ -29,6 +29,8 @@
  @param block A single-argument, void-returning code block.
  */
 - (void)each:(BKSenderBlock)block;
+- (void)eachReversed:(BKSenderBlock)block;
+- (void)eachReversed:(BOOL)isReversed block:(BKSenderBlock)block;
 
 /** Enumerates through an array concurrently and executes
  the given block once for each object.
