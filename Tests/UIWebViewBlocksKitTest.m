@@ -2,11 +2,14 @@
 //  UIWebViewBlocksKitTest.m
 //  BlocksKit Unit Tests
 //
-//  Created by Zachary Waldowski on 12/20/11.
-//  Copyright (c) 2011-2012 Pandamonia LLC. All rights reserved.
-//
 
-#import "UIWebViewBlocksKitTest.h"
+#import <XCTest/XCTest.h>
+#import <BlocksKit/UIWebView+BlocksKit.h>
+#import <BlocksKit/A2DynamicDelegate.h>
+
+@interface UIWebViewBlocksKitTest : XCTestCase <UIWebViewDelegate>
+
+@end
 
 @implementation UIWebViewBlocksKitTest {
 	UIWebView *_subject;
@@ -14,7 +17,7 @@
 }
 
 - (void)setUp {
-	_subject = [[UIWebView alloc] initWithFrame: (CGRect){0, 0, 0, 0}];
+	_subject = [[UIWebView alloc] initWithFrame:CGRectZero];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -38,58 +41,58 @@
 	_subject.delegate = self;
 	
 	__block BOOL shouldStartLoadBlock = NO;
-	_subject.shouldStartLoadBlock = ^BOOL(UIWebView *view, NSURLRequest *req, UIWebViewNavigationType type){
+	_subject.bk_shouldStartLoadBlock = ^BOOL(UIWebView *view, NSURLRequest *req, UIWebViewNavigationType type) {
 		shouldStartLoadBlock = YES;
 		return YES;
 	};
 	
-	BOOL shouldStartLoad = [_subject.dynamicDelegate webView:_subject shouldStartLoadWithRequest:nil navigationType:UIWebViewNavigationTypeLinkClicked];
+	BOOL shouldStartLoad = [_subject.bk_dynamicDelegate webView:_subject shouldStartLoadWithRequest:nil navigationType:UIWebViewNavigationTypeLinkClicked];
 	
-	STAssertTrue(shouldStartLoad, @"Web view is allowed to load");
-	STAssertTrue(shouldStartLoadBlock, @"Block handler was called");
-	STAssertTrue(shouldStartLoadDelegate, @"Delegate was called");
+	XCTAssertTrue(shouldStartLoad, @"Web view is allowed to load");
+	XCTAssertTrue(shouldStartLoadBlock, @"Block handler was called");
+	XCTAssertTrue(shouldStartLoadDelegate, @"Delegate was called");
 }
 
 - (void)testDidStartLoad {
 	_subject.delegate = self;
 	
 	__block BOOL didStartLoadBlock = NO;
-	_subject.didStartLoadBlock = ^(UIWebView *view){
+	_subject.bk_didStartLoadBlock = ^(UIWebView *view) {
 		didStartLoadBlock = YES;
 	};
 	
-	[_subject.dynamicDelegate webViewDidStartLoad:_subject];
+	[_subject.bk_dynamicDelegate webViewDidStartLoad:_subject];
 	
-	STAssertTrue(didStartLoadBlock, @"Block handler was called");
-	STAssertTrue(didStartLoadDelegate, @"Delegate was called");
+	XCTAssertTrue(didStartLoadBlock, @"Block handler was called");
+	XCTAssertTrue(didStartLoadDelegate, @"Delegate was called");
 }
 
 - (void)testDidFinishLoad {
 	_subject.delegate = self;
 	
 	__block BOOL didFinishLoadBlock = NO;
-	_subject.didFinishLoadBlock = ^(UIWebView *view){
+	_subject.bk_didFinishLoadBlock = ^(UIWebView *view) {
 		didFinishLoadBlock = YES;
 	};
 	
-	[_subject.dynamicDelegate webViewDidFinishLoad:_subject];
+	[_subject.bk_dynamicDelegate webViewDidFinishLoad:_subject];
 	
-	STAssertTrue(didFinishLoadBlock, @"Block handler was called");
-	STAssertTrue(didFinishLoadDelegate, @"Delegate was called");
+	XCTAssertTrue(didFinishLoadBlock, @"Block handler was called");
+	XCTAssertTrue(didFinishLoadDelegate, @"Delegate was called");
 }
 
 - (void)testDidFinishWithError {
 	_subject.delegate = self;
 	
 	__block BOOL didFinishWithErrorBlock = NO;
-	_subject.didFinishWithErrorBlock = ^(UIWebView *view, NSError *err){
+	_subject.bk_didFinishWithErrorBlock = ^(UIWebView *view, NSError *err) {
 		didFinishWithErrorBlock = YES;
 	};
 	
-	[_subject.dynamicDelegate webView:_subject didFailLoadWithError:nil];
+	[_subject.bk_dynamicDelegate webView:_subject didFailLoadWithError:nil];
 	
-	STAssertTrue(didFinishWithErrorBlock, @"Block handler was called");
-	STAssertTrue(didFinishWithErrorDelegate, @"Delegate was called");
+	XCTAssertTrue(didFinishWithErrorBlock, @"Block handler was called");
+	XCTAssertTrue(didFinishWithErrorDelegate, @"Delegate was called");
 }
 
 @end

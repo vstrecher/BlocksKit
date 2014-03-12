@@ -2,11 +2,17 @@
 //  NSInvocationBlocksKitTest.m
 //  BlocksKit Unit Tests
 //
-//  Created by Kai Wu on 7/5/11.
-//  Copyright (c) 2011-2012 Pandamonia LLC. All rights reserved.
+//  Contributed by Kai Wu.
 //
 
-#import "NSInvocationBlocksKitTest.h"
+#import <XCTest/XCTest.h>
+#import <BlocksKit/NSInvocation+BlocksKit.h>
+
+@interface NSInvocationBlocksKitTest : XCTestCase
+
+- (void)testBlockInvocation;
+
+@end
 
 @implementation NSInvocationBlocksKitTest {
 	NSInteger _total;	
@@ -21,13 +27,13 @@
 }
 
 - (void)testBlockInvocation {
-	BKSenderBlock senderBlock = ^(NSInvocationBlocksKitTest * sender) {
+	void (^senderBlock)(NSInvocationBlocksKitTest *) = ^(NSInvocationBlocksKitTest *sender) {
 		[sender action];
 	};
-	NSInvocation *invocation = [NSInvocation invocationWithTarget:self block:senderBlock];
-	STAssertNotNil(invocation, @"invocation is nil");
+	NSInvocation *invocation = [NSInvocation bk_invocationWithTarget:self block:senderBlock];
+	XCTAssertNotNil(invocation, @"invocation is nil");
 	[invocation invoke];
-	STAssertEquals(_total, (NSInteger)1, @"total is %d", _total);
+	XCTAssertEqual(_total, (NSInteger)1, @"total is %ld", (long)_total);
 }
 
 @end

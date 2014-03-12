@@ -2,11 +2,17 @@
 //  MFMessageComposeViewControllerBlocksKitTest.m
 //  BlocksKit Unit Tests
 //
-//  Created by Zachary Waldowski on 12/20/11.
-//  Copyright (c) 2011-2012 Pandamonia LLC. All rights reserved.
-//
 
-#import "MFMessageComposeViewControllerBlocksKitTest.h"
+#import <XCTest/XCTest.h>
+#import <MessageUI/MessageUI.h>
+#import <BlocksKit/A2DynamicDelegate.h>
+#import <BlocksKit/BlocksKit+MessageUI.H>
+
+@interface MFMessageComposeViewControllerBlocksKitTest : XCTestCase <MFMessageComposeViewControllerDelegate>
+
+- (void)testCompletionBlock;
+
+@end
 
 @implementation MFMessageComposeViewControllerBlocksKitTest {
 	MFMessageComposeViewController *_subject;
@@ -28,12 +34,12 @@
 	delegateWorked = NO;
 	__block BOOL blockWorked = NO;
 	_subject.messageComposeDelegate = self;
-	_subject.completionBlock = ^(MFMessageComposeViewController *controller, MessageComposeResult result){
+	_subject.bk_completionBlock = ^(MFMessageComposeViewController *controller, MessageComposeResult result) {
 		blockWorked = YES;
 	};
-	[[_subject dynamicDelegateForProtocol:@protocol(MFMessageComposeViewControllerDelegate)] messageComposeViewController:_subject didFinishWithResult:MessageComposeResultSent];
-	STAssertTrue(delegateWorked, @"Delegate method not called.");
-	STAssertTrue(blockWorked, @"Block handler not called.");
+	[[_subject bk_dynamicDelegateForProtocol:@protocol(MFMessageComposeViewControllerDelegate)] messageComposeViewController:_subject didFinishWithResult:MessageComposeResultSent];
+	XCTAssertTrue(delegateWorked, @"Delegate method not called.");
+	XCTAssertTrue(blockWorked, @"Block handler not called.");
 }
 
 @end

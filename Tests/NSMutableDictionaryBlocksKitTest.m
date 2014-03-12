@@ -2,11 +2,15 @@
 //  NSMutableDictionaryBlocksKitTest.m
 //  BlocksKit Unit Tests
 //
-//  Created by Kai Wu on 7/7/11.
-//  Copyright (c) 2011-2012 Pandamonia LLC. All rights reserved.
+//  Contributed by Kai Wu.
 //
 
-#import "NSMutableDictionaryBlocksKitTest.h"
+#import <XCTest/XCTest.h>
+#import <BlocksKit/NSMutableDictionary+BlocksKit.h>
+
+@interface NSMutableDictionaryBlocksKitTest : XCTestCase
+
+@end
 
 @implementation NSMutableDictionaryBlocksKitTest {
 	NSMutableDictionary *_subject;
@@ -23,64 +27,64 @@
 }
 
 - (void)testSelect {
-	BKKeyValueValidationBlock validationBlock = ^(id key,id value) {
+	BOOL(^validationBlock)(id, id) = ^(id key,id value) {
 		_total += [value intValue] + [key intValue];
 		BOOL select = [value intValue] < 3 ? YES : NO;
 		return select;
 	};
-	[_subject performSelect:validationBlock];
-	STAssertEquals(_total,(NSInteger)12,@"2*(1+2+3) = %d",_total);
+	[_subject bk_performSelect:validationBlock];
+	XCTAssertEqual(_total,(NSInteger)12,@"2*(1+2+3) = %ld", (long)_total);
 	NSDictionary *target = @{ @"1" : @(1), @"2" : @(2) };
-	STAssertEqualObjects(_subject,target,@"selected dictionary is %@",_subject);
+	XCTAssertEqualObjects(_subject,target,@"selected dictionary is %@",_subject);
 }
 
 - (void)testSelectedNone {
-	BKKeyValueValidationBlock validationBlock = ^(id key,id value) {
+	BOOL(^validationBlock)(id, id) = ^(id key,id value) {
 		_total += [value intValue] + [key intValue];
 		BOOL select = [value intValue] > 4 ? YES : NO;
 		return select;
 	};
-	[_subject performSelect:validationBlock];
-	STAssertEquals(_total,(NSInteger)12,@"2*(1+2+3) = %d",_total);
-	STAssertEquals(_subject.count,(NSUInteger)0,@"no item is selected");
+	[_subject bk_performSelect:validationBlock];
+	XCTAssertEqual(_total,(NSInteger)12,@"2*(1+2+3) = %ld", (long)_total);
+	XCTAssertEqual(_subject.count,(NSUInteger)0,@"no item is selected");
 }
 
 - (void)testReject {
-	BKKeyValueValidationBlock validationBlock = ^(id key,id value) {
+	BOOL(^validationBlock)(id, id) = ^(id key,id value) {
 		_total += [value intValue] + [key intValue];
 		BOOL reject = [value intValue] > 2 ? YES : NO;
 		return reject;
 	};
-	[_subject performReject:validationBlock];
-	STAssertEquals(_total,(NSInteger)12,@"2*(1+2+3) = %d",_total);
+	[_subject bk_performReject:validationBlock];
+	XCTAssertEqual(_total,(NSInteger)12,@"2*(1+2+3) = %ld", (long)_total);
 	NSDictionary *target = @{ @"1" : @(1), @"2" : @(2) };
-	STAssertEqualObjects(_subject,target,@"dictionary after reject is %@",_subject);
+	XCTAssertEqualObjects(_subject,target,@"dictionary after reject is %@",_subject);
 }
 
 - (void)testRejectedAll {
-	BKKeyValueValidationBlock validationBlock = ^(id key,id value) {
+	BOOL(^validationBlock)(id, id) = ^(id key,id value) {
 		_total += [value intValue] + [key intValue];
 		BOOL reject = [value intValue] < 4 ? YES : NO;
 		return reject;
 	};
-	[_subject performReject:validationBlock];
-	STAssertEquals(_total,(NSInteger)12,@"2*(1+2+3) = %d",_total);
-	STAssertEquals(_subject.count,(NSUInteger)0,@"all items are rejected");
+	[_subject bk_performReject:validationBlock];
+	XCTAssertEqual(_total,(NSInteger)12,@"2*(1+2+3) = %ld", (long)_total);
+	XCTAssertEqual(_subject.count,(NSUInteger)0,@"all items are rejected");
 }
 
 - (void)testMap {
-	BKKeyValueTransformBlock transformBlock = ^id(id key,id value) {
+	id(^transformBlock)(id, id) = ^id(id key,id value) {
 		_total += [value intValue] + [key intValue];
 		return @(_total);
 	};
-	[_subject performMap:transformBlock];
-	STAssertEquals(_total,(NSInteger)12,@"2*(1+2+3) = %d",_total);
+	[_subject bk_performMap:transformBlock];
+	XCTAssertEqual(_total,(NSInteger)12,@"2*(1+2+3) = %ld", (long)_total);
 	NSDictionary *target = @{
 		@"1" : @(2),
 		@"2" : @(6),
 		@"3" : @(12)
 	};
-	STAssertEqualObjects(_subject,target,@"transformed dictionary is %@",_subject);
+	XCTAssertEqualObjects(_subject,target,@"transformed dictionary is %@",_subject);
 }
 
 @end

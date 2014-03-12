@@ -2,9 +2,6 @@
 //  BKAsyncTestCase.m
 //  BlocksKit Unit Tests
 //
-//  Created by Zachary Waldowski on 10/5/12.
-//  Copyright (c) 2012 Pandamonia LLC. All rights reserved.
-//
 
 #import "BKAsyncTestCase.h"
 #import <objc/runtime.h>
@@ -43,7 +40,7 @@ typedef NS_ENUM(NSUInteger, SenTestCaseError) {
 }
 
 - (void)prepare {
-	[self prepare: [self selector]];
+	[self prepare:[self selector]];
 }
 
 - (void)prepare:(SEL)selector {
@@ -103,18 +100,18 @@ typedef NS_ENUM(NSUInteger, SenTestCaseError) {
 - (void)waitForStatus:(NSInteger)status timeout:(NSTimeInterval)timeout {
 	SenTestCaseError error = [self _waitFor:status timeout:timeout];
 	if (error == SenTestCaseErrorTimedOut) {
-		STFail(@"Request timed out");
+		XCTFail(@"Request timed out");
 	} else if (error == SenTestCaseErrorInvalidStatus) {
-		STFail(@"Request finished with the wrong status: %d != %d", status, notifiedStatus_);
+		XCTFail(@"Request finished with the wrong status: %ld != %ld", (long)status, (long)notifiedStatus_);
 	} else if (error == SenTestCaseErrorUnprepared) {
-		STFail(@"Call prepare before calling asynchronous method and waitForStatus:timeout:");
+		XCTFail(@"Call prepare before calling asynchronous method and waitForStatus:timeout:");
 	}
 }
 
 - (void)waitForTimeout:(NSTimeInterval)timeout {
 	SenTestCaseError error = [self _waitFor:-1 timeout:timeout];
 	if (error != SenTestCaseErrorTimedOut) {
-		STFail(@"Request should have timed out");
+		XCTFail(@"Request should have timed out");
 	}
 }
 

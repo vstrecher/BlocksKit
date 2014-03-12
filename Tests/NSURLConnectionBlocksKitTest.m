@@ -2,11 +2,14 @@
 //  NSURLConnectionBlocksKitTest.m
 //  BlocksKit Unit Tests
 //
-//  Created by Zachary Waldowski on 12/20/11.
-//  Copyright (c) 2011-2012 Pandamonia LLC. All rights reserved.
-//
 
-#import "NSURLConnectionBlocksKitTest.h"
+#import <XCTest/XCTest.h>
+#import <BlocksKit/NSURLConnection+BlocksKit.h>
+#import "BKAsyncTestCase.h"
+
+@interface NSURLConnectionBlocksKitTest : BKAsyncTestCase
+
+@end
 
 @implementation NSURLConnectionBlocksKitTest
 
@@ -14,15 +17,15 @@
 	[self prepare];
 	NSURL *URL = [NSURL URLWithString:@"http://google.com/"];
 	NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-	NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest: request];
-	conn.successBlock = ^(NSURLConnection *connection, NSURLResponse *response, NSData *data) {
-		[self notify:data.length ? SenTestCaseWaitStatusSuccess : SenTestCaseWaitStatusFailure forSelector: @selector(testAsyncConnection)];
+	NSURLConnection *conn = [[NSURLConnection alloc] bk_initWithRequest:request];
+	conn.bk_successBlock = ^(NSURLConnection *connection, NSURLResponse *response, NSData *data) {
+		[self notify:data.length ? SenTestCaseWaitStatusSuccess : SenTestCaseWaitStatusFailure forSelector:@selector(testAsyncConnection)];
 	};
-	conn.failureBlock = ^(NSURLConnection *connection, NSError *err) {
-		[self notify: SenTestCaseWaitStatusFailure forSelector: @selector(testAsyncConnection)];
+	conn.bk_failureBlock = ^(NSURLConnection *connection, NSError *err) {
+		[self notify:SenTestCaseWaitStatusFailure forSelector:@selector(testAsyncConnection)];
 	};
 	[conn start];
-	[self waitForStatus: SenTestCaseWaitStatusSuccess timeout:10.0];
+	[self waitForStatus:SenTestCaseWaitStatusSuccess timeout:10.0];
 }
 
 @end
